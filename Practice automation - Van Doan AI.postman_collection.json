@@ -1,0 +1,447 @@
+{
+	"info": {
+		"_postman_id": "5a3931c7-ed68-4869-bce5-a4bf4af87341",
+		"name": "Practice automation - Van Doan AI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10834378"
+	},
+	"item": [
+		{
+			"name": "Register AI",
+			"item": [
+				{
+					"name": "Register successfully AI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response time is within an acceptable range\", function () {",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});",
+									"",
+									"",
+									"pm.test(\"Content-Type header is application/json\", function () {",
+									"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+									"});",
+									"",
+									"",
+									"pm.test(\"Response has the required fields - id and token\", function () {",
+									"    const responseData = pm.response.json();",
+									"    ",
+									"    pm.expect(responseData).to.be.an('object');",
+									"    pm.expect(responseData).to.have.property('id');",
+									"    pm.expect(responseData).to.have.property('token');",
+									"});",
+									"",
+									"",
+									"pm.test(\"Token is a non-empty string\", function () {",
+									"  const responseData = pm.response.json();",
+									"",
+									"  pm.expect(responseData.token).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Token should not be empty\");",
+									"});",
+									"",
+									"pm.test(\"Check the id is OK\", function () {",
+									"    pm.response.to.have.jsonBody(\"id\",4);",
+									"});",
+									"",
+									"pm.test(\"Check the token is OK\", function () {",
+									"    pm.response.to.have.jsonBody(\"token\",\"QpwL5tke4Pnpja7X4\");",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{user_uri}}/api/register",
+							"host": [
+								"{{user_uri}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register-Missing password AI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Response is OK\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check showing the error message as Missing password\", function () {\r",
+									"    const missingPswToCheck = \"Missing password\";\r",
+									"    let resBody = pm.response.json();\r",
+									"    pm.environment.set(\"returnError\", resBody.error);\r",
+									"    pm.expect(pm.environment.get(\"returnError\")).to.be.eq(missingPswToCheck);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Response status code is 400\", function () {\r",
+									"    pm.expect(pm.response.code).to.equal(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Check for the error message as Missing password\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"  \r",
+									"  pm.expect(responseData.error).to.equal(\"Missing password\");\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response time is less than 200ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response schema for required fields and data types\", function () {\r",
+									"  const responseData = pm.response.json();\r",
+									"\r",
+									"  pm.expect(responseData).to.be.an('object');\r",
+									"  pm.expect(responseData.error).to.be.a('string').and.to.exist;\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password_empty}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{user_uri}}/api/register",
+							"host": [
+								"{{user_uri}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Wrong email AI",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Response is OK\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check the wrong email\", function () {\r",
+									"    const wrongEmailToCheck = \"Note: Only defined users succeed registration\";\r",
+									"    let resBody = pm.response.json();\r",
+									"    pm.environment.set(\"returnError\", resBody.error);\r",
+									"    pm.expect(pm.environment.get(\"returnError\")).to.be.eq(wrongEmailToCheck);\r",
+									"})\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response schema for registration endpoint\", function () {\r",
+									"    const responseData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(responseData).to.be.an('object');\r",
+									"    pm.expect(responseData).to.have.property('userId');\r",
+									"    pm.expect(responseData.userId).to.be.a('number');\r",
+									"\r",
+									"    pm.expect(responseData).to.have.property('username');\r",
+									"    pm.expect(responseData.username).to.be.a('string');\r",
+									"\r",
+									"    pm.expect(responseData).to.have.property('email');\r",
+									"    pm.expect(responseData.email).to.be.a('string').and.to.match(/^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$/);\r",
+									"\r",
+									"    pm.expect(responseData).to.have.property('createdAt');\r",
+									"    pm.expect(responseData.createdAt).to.be.a('string').and.to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let timeStamp = Date.now();\r",
+									"let emailRandom = \"eve.holt_\" + timeStamp + \"reqres.in\";\r",
+									"pm.collectionVariables.set(\"wrongEmail\",emailRandom);\r",
+									"console.log(\"Email\",emailRandom);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"{{wrongEmail}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{user_uri}}/api/register",
+							"host": [
+								"{{user_uri}}"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "run data test AI",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const registerData = pm.iterationData.get(\"registerData\");\r",
+							"const emailTestData = registerData.email;\r",
+							"const passwordTestData = registerData.password;\r",
+							"\r",
+							"pm.variables.set(\"email\",emailTestData);\r",
+							"pm.variables.set(\"password\",passwordTestData);\r",
+							"\r",
+							"console.log('emailTestData: [${email}] | passwordTestData: [${password}]');\r",
+							"\r",
+							"const verificationData = pm.iterationData.get(\"verificationData\");\r",
+							"const messageTestData = verificationData.message;\r",
+							"const expectedResponseCodeTestData = verificationData.expectedResponseCode;\r",
+							"const expectedResponseToContainTestData = verificationData.expectedResponseToContain;\r",
+							"\r",
+							"pm.variables.set(\"message\",messageTestData);\r",
+							"pm.variables.set(\"expectedResponseCode\",expectedResponseCodeTestData);\r",
+							"pm.variables.set(\"expectedResponseToContain\",expectedResponseToContainTestData);\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response content type is text/xml\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/xml\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response body is not empty\", function () {\r",
+							"  const responseData = xml2Json(pm.response.text());\r",
+							"  \r",
+							"  pm.expect(responseData).to.not.be.null.and.to.not.be.undefined;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response body is in a valid XML format\", function () {\r",
+							"    const responseData = xml2Json(pm.response.text());\r",
+							"    pm.expect(responseData).to.not.be.null;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify that the response does not contain any sensitive information\", function () {\r",
+							"  const responseData = xml2Json(pm.response.text());\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.null;\r",
+							"});\r",
+							"\r",
+							"const resBody = pm.response.json();\r",
+							"pm.test(`${pm.variables.get(\"message\")} email: [${pm.variables.get(\"email\")}] | password: [${pm.variables.get(\"password\")}]`, () =>\r",
+							"    {\r",
+							"        pm.response.to.have.status(pm.variables.get(\"expectedResponseCode\"));\r",
+							"    }\r",
+							")\r",
+							"\r",
+							"pm.test(`Verify response status code is  [${pm.variables.get(\"expectedResponseCode\")}] and response contains [${pm.variables.get(\"expectedResponseToContain\")}]`, () =>\r",
+							"    {\r",
+							"        pm.expect(JSON.stringify(resBody)).to.contain(pm.variables.get(\"expectedResponseToContain\"));\r",
+							"    }\r",
+							")\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{user_uri}}/api/register",
+					"host": [
+						"{{user_uri}}"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				},
+				"description": "\n### Register User\n\nThis endpoint allows the user to register by providing their email and password.\n\n#### Request Body\n- `email` (string, required): The email of the user.\n- `password` (string, required): The password for the user account.\n\n#### Response\n- Status: 200\n- Content-Type: text/xml\n\n#### Headers\nThe request should include the necessary headers as per the API documentation.\n"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2YW4uZG9hbiIsImVtYWlsIjoidmFuLmRvYW5AY2J0dy50ZWNoIiwiZGlzcGxheU5hbWUiOiJWYW4gRG9hbiBUaGkgVGh1IiwiZ2l2ZW5OYW1lIjoiVmFuIiwidXNlcm5hbWUiOiJ2YW4uZG9hbiIsInJvbGVzIjpbInVzZXIiXSwiaWF0IjoxNzExMDAyMTM5LCJleHAiOjE3MTEwMDU3MzksImF1ZCI6IlJNTyBBcHAiLCJpc3MiOiJSTU8ifQ.kbjtE-1ue--yJGVT_Y6AK1NpAzTe61JV9mcG3jQ6wvs",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_uri",
+			"value": "https://reqres.in",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "eve.holt@reqres.in",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "pistol",
+			"type": "string"
+		},
+		{
+			"key": "password_empty",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "error_message",
+			"value": "Missing password",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": "4",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "QpwL5tke4Pnpja7X4",
+			"type": "string"
+		},
+		{
+			"key": "wrong_email",
+			"value": "wrong_email@reqres.in",
+			"type": "string"
+		},
+		{
+			"key": "wrongEmail",
+			"value": ""
+		}
+	]
+}
